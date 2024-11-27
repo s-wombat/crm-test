@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'phone' => 'required|string|max:20',
             'registered_at' => 'required|date',
             'status' => ['required', new Enum(StatusTypes::class)],
-
+            'city' => 'nullable|string|max:255',
         ];
     }
 }

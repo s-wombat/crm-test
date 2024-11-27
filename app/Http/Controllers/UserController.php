@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Enums\StatusTypes;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -22,7 +25,7 @@ class UserController extends Controller
         }
 
         // Пагинация
-        $users = $query->orderBy('id', 'desc')->paginate(10);
+        $users = $query->orderBy('id', 'asc')->paginate(10);
 
         return view('users.index', compact('users'));
     }
@@ -30,6 +33,14 @@ class UserController extends Controller
     public function create()
     {
         return view('users.edit');
+    }
+
+    public function show(User $user)
+    {
+        $user = User::find($user->id);
+        $weather = $this->getWeather($user->city);
+
+        return view('users.show', compact('user', 'weather'));
     }
 
     public function store(StoreUserRequest $request)
@@ -43,7 +54,32 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $weather = $this->getWeather($user->city);
+
+        return view('users.edit', compact('user', 'weather'));
+    }
+
+    private function getWeather($city)
+    {
+        if (!$city) {
+            return null;
+        }
+
+        // Кэшируем данные на 30 минут
+        return Cache::remember("weather_{$city}", now()->addMinutes(30), function () use ($city) {
+            $response = Http::get(config('services.openweather.base_url'), [
+                'q' => $city,
+                'appid' => config('services.openweather.api_key'),
+                'units' => 'metric',
+                'lang' => 'ru',
+            ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return null;
+        });
     }
 
     public function update(UpdateUserRequest $request, User $user)

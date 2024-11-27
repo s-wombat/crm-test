@@ -47,6 +47,21 @@
             </select>
         </div>
 
+        <div class="mb-3">
+            <label for="city">Город</label>
+            <input type="text" name="city" id="city" class="form-control" value="{{ old('city', $user->city ?? '') }}">
+        </div>
+        
+        @if(isset($weather))
+            <div class="mb-3">
+                <h4>Текущая погода в {{ $user->city }}</h4>
+                <p>Температура: {{ $weather['main']['temp'] }} °C</p>
+                <p>Описание: {{ $weather['weather'][0]['description'] }}</p>
+                <p>Влажность: {{ $weather['main']['humidity'] }}%</p>
+                <p>Скорость ветра: {{ $weather['wind']['speed'] }} м/с</p>
+            </div>
+        @endif
+
         <button type="submit" class="btn btn-success">Сохранить</button>
     </form>
 </div>

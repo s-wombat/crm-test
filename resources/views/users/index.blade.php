@@ -25,18 +25,20 @@
                 <th>Телефон</th>
                 <th>Дата регистрации</th>
                 <th>Статус</th>
+                <th>Город</th>
                 <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             @foreach($users as $user)
                 <tr>
-                    <td>{{ $user->id }}</td>
+                    <td><a href="{{ route('users.show', $user) }}" class="btn btn-info">{{ $user->id }}</a></td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->phone }}</td>
                     <td>{{ $user->registered_at }}</td>
                     <td>{{ $user->status }}</td>
+                    <td>{{ $user->city }}</td>
                     <td>
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">Редактировать</a>
                         <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
