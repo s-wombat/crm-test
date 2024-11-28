@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Jobs\ProcessWelcomeEmail;
+use App\Notifications\WelcomeUserNotification;
 
 class UserController extends Controller
 {
@@ -47,7 +49,13 @@ class UserController extends Controller
     {
 
         $validated = $request->validated();
-        User::create($validated);
+        $user = User::create($validated);
+
+         // Отправка уведомления
+        $user->notify(new WelcomeUserNotification($user));
+
+        // Поставить задания в очередь для фоновой обработки
+        ProcessWelcomeEmail::dispatch($user);
 
         return redirect()->route('users.index')->with('success', 'Клиент успешно добавлен.');
     }
