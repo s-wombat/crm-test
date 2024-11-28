@@ -2,31 +2,15 @@
 
 namespace App\Notifications;
 
-use Exception;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
 
 class WelcomeUserNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-
-    /**
-     * Максимальное количество попыток.
-     *
-     * @var int
-     */
-    public $tries = 3;
-
-    /**
-     * Таймаут между попытками (в секундах).
-     *
-     * @var int
-     */
-    public $backoff = 60;
 
     /**
      * Create a new notification instance.
@@ -70,17 +54,4 @@ class WelcomeUserNotification extends Notification implements ShouldQueue
             //
         ];
     }
-
-    /**
-     * Обработка сбоя при выполнении задачи.
-     *
-     * @param  Exception  $exception
-     * @return void
-     */
-    public function failed(Exception $exception)
-    {
-        // Логирование ошибки
-        Log::error('Ошибка отправки письма: ' . $exception->getMessage());
-    }
-
 }
