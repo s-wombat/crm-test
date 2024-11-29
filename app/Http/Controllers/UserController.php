@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\StatusTypes;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Jobs\ProcessWelcomeEmail;
 use App\Notifications\WelcomeUserNotification;
+use App\Services\OpenWeatherService;
 
 class UserController extends Controller
 {
@@ -72,21 +71,11 @@ class UserController extends Controller
         if (!$city) {
             return null;
         }
-
+ 
         // Кэшируем данные на 30 минут
-        return Cache::remember("weather_{$city}", now()->addMinutes(30), function () use ($city) {
-            $response = Http::get(config('services.openweather.base_url'), [
-                'q' => $city,
-                'appid' => config('services.openweather.api_key'),
-                'units' => 'metric',
-                'lang' => 'ru',
-            ]);
-
-            if ($response->successful()) {
-                return $response->json();
-            }
-
-            return null;
+        return Cache::remember("weather_{$city}", now()->addMinutes(1), function () use ($city) {
+            $service = new OpenWeatherService();
+            return $service->getCurrentWeather($city);
         });
     }
 

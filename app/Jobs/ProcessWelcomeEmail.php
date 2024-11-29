@@ -42,7 +42,11 @@ class ProcessWelcomeEmail implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->user->notify(new WelcomeUserNotification($this->user->name));
+        if ($this->user->email === 'fail@example.com') {
+            throw new \Exception('Test failure');
+        }
+
+        $this->user->notify(new WelcomeUserNotification($this->user));
     }
 
     /**

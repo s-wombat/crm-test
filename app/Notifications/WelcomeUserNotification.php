@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Exception;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,6 +35,10 @@ class WelcomeUserNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        if ($this->user->email === 'fail@example.com') {
+            throw new Exception('Test failure');
+        }
+
         return (new MailMessage)
                     ->subject('Добро пожаловать в нашу систему!')
                     ->greeting("Здравствуйте, {$this->user->name}!")

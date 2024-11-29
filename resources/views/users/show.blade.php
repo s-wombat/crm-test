@@ -11,8 +11,9 @@
 
 @if(isset($weather))
     <div class="mb-3">
-        <h4>Погода в {{ $user->city }}</h4>
+        <h4>Погода в {{ $user->city }}, {{$weather['sys']['country']}}</h4>
         <p>Температура: {{ $weather['main']['temp'] }} °C</p>
+        <p>Чувствуется как: {{ $weather['main']['feels_like'] }} °C</p>
         <p>Описание: {{ $weather['weather'][0]['description'] }}</p>
         <p>Влажность: {{ $weather['main']['humidity'] }}%</p>
         <p>Скорость ветра: {{ $weather['wind']['speed'] }} м/с</p>
